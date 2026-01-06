@@ -71,6 +71,64 @@ export async function deleteTransaction(id: string) {
     }
 
     revalidatePath('/transactions')
+    revalidatePath('/transactions')
     revalidatePath('/')
+    return { success: true }
+}
+
+export async function updateTransaction(id: string, formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    const amount = parseFloat(formData.get('amount') as string)
+    const description = formData.get('description') as string
+    const date = formData.get('date') as string
+    const type = formData.get('type') as string
+    const category_id = formData.get('category_id') as string
+    const credit_card_id = formData.get('credit_card_id') as string || null
+
+    if (!category_id) return { error: 'Category is required' }
+
+    // 1. Get old transaction
+    const { data: oldTx } = await supabase.from('transactions').select('*').eq('id', id).single()
+    if (!oldTx) return { error: 'Transaction not found' }
+
+    // 2. Revert old balance effect
+    if (oldTx.type === 'expense' && oldTx.credit_card_id) {
+        const { data: oldCard } = await supabase.from('credit_cards').select('current_balance').eq('id', oldTx.credit_card_id).single()
+        if (oldCard) {
+            await supabase.from('credit_cards').update({
+                current_balance: Number(oldCard.current_balance) - Number(oldTx.amount)
+            }).eq('id', oldTx.credit_card_id)
+        }
+    }
+
+    // 3. Update transaction
+    const payload = {
+        amount,
+        description,
+        date,
+        type,
+        category_id,
+        credit_card_id: credit_card_id === 'none' ? null : credit_card_id
+    }
+
+    const { error } = await supabase.from('transactions').update(payload).eq('id', id)
+    if (error) return { error: error.message }
+
+    // 4. Apply new balance effect
+    if (type === 'expense' && payload.credit_card_id) {
+        const { data: newCard } = await supabase.from('credit_cards').select('current_balance').eq('id', payload.credit_card_id).single()
+        if (newCard) {
+            await supabase.from('credit_cards').update({
+                current_balance: Number(newCard.current_balance) + amount
+            }).eq('id', payload.credit_card_id)
+        }
+    }
+
+    revalidatePath('/transactions')
+    revalidatePath('/')
+    revalidatePath('/cards')
     return { success: true }
 }

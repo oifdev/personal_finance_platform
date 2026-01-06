@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import { CategoryList } from './category-list'
-import { CategoryForm } from './category-form'
+import { CategoriesManager } from './categories-manager'
 
 export default async function CategoriesPage() {
     const supabase = await createClient()
@@ -15,14 +14,7 @@ export default async function CategoriesPage() {
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-                <CategoryForm />
-
-                <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">Categorías Existentes</h3>
-                    <CategoryList categories={categories || []} />
-                </div>
-            </div>
+            <CategoriesManager categories={categories || []} />
         </div>
     )
 }

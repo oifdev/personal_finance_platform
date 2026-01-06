@@ -38,3 +38,30 @@ export async function deleteCategory(id: string) {
     revalidatePath('/categories')
     return { success: true }
 }
+
+export async function updateCategory(id: string, formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    const name = formData.get('name') as string
+    const type = formData.get('type') as string
+    const icon = formData.get('icon') as string
+    const color = formData.get('color') as string
+
+    const { error } = await supabase
+        .from('categories')
+        .update({
+            name,
+            type,
+            icon,
+            color
+        })
+        .eq('id', id)
+        .eq('user_id', user.id)
+
+    if (error) return { error: error.message }
+
+    revalidatePath('/categories')
+    return { success: true }
+}

@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
-import { TransactionForm } from '@/components/transactions/transaction-form'
-import { TransactionList } from '@/components/transactions/transaction-list'
+import { TransactionsManager } from './transactions-manager'
 
 export default async function TransactionsPage() {
     const supabase = await createClient()
@@ -29,19 +28,11 @@ export default async function TransactionsPage() {
                 <p className="text-muted-foreground mt-1">Gestiona tus ingresos y gastos.</p>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1">
-                    <TransactionForm
-                        categories={categories || []}
-                        creditCards={cards || []}
-                    />
-                </div>
-
-                <div className="lg:col-span-2 space-y-4">
-                    <h3 className="text-xl font-semibold">History</h3>
-                    <TransactionList transactions={transactions || []} />
-                </div>
-            </div>
+            <TransactionsManager
+                transactions={transactions || []}
+                categories={categories || []}
+                creditCards={cards || []}
+            />
         </div>
     )
 }

@@ -1,32 +1,53 @@
 'use client'
 
 import { useState } from 'react'
-import { createTransaction } from '@/app/(dashboard)/transactions/actions'
+import { createTransaction, updateTransaction } from '@/app/(dashboard)/transactions/actions'
 import * as Icons from 'lucide-react'
 
 // Props: list of categories and credit cards passed from Server Component
 interface TransactionFormProps {
     categories: any[]
     creditCards: any[]
+    initialData?: any
+    onCancel?: () => void
 }
 
-export function TransactionForm({ categories, creditCards }: TransactionFormProps) {
+export function TransactionForm({ categories, creditCards, initialData, onCancel }: TransactionFormProps) {
     const [loading, setLoading] = useState(false)
-    const [type, setType] = useState('expense') // 'income' or 'expense'
+    const [type, setType] = useState(initialData?.type || 'expense') // 'income' or 'expense'
 
     const filteredCategories = categories.filter(c => c.type === type)
 
     async function handleSubmit(formData: FormData) {
         setLoading(true)
         formData.append('type', type)
-        await createTransaction(formData)
-        setLoading(false);
-        (document.getElementById('transaction-form') as HTMLFormElement).reset()
+
+        if (initialData) {
+            // Check if credit card needs to be explicitly set to 'none' if null in update
+            // Using logic in actions.ts to handle 'none' string or null
+            await updateTransaction(initialData.id, formData)
+            if (onCancel) onCancel()
+        } else {
+            await createTransaction(formData)
+            // Reset form
+            setType('expense');
+            (document.getElementById('transaction-form') as HTMLFormElement).reset()
+        }
+
+        setLoading(false)
     }
 
     return (
         <div className="glass-card p-6 rounded-xl">
-            <h3 className="text-lg font-semibold mb-6">Agregar Transacción</h3>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold">{initialData ? 'Editar Transacción' : 'Agregar Transacción'}</h3>
+                {initialData && (
+                    <button onClick={onCancel} className="text-xs text-muted-foreground hover:text-white">
+                        Cancelar
+                    </button>
+                )}
+            </div>
+
             <form id="transaction-form" action={handleSubmit} className="space-y-6">
 
                 {/* Type Toggle */}
@@ -56,6 +77,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                             type="number"
                             step="0.01"
                             required
+                            defaultValue={initialData?.amount}
                             placeholder="0.00"
                             className="w-full pl-8 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                         />
@@ -67,6 +89,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                     <input
                         name="description"
                         type="text"
+                        defaultValue={initialData?.description}
                         placeholder={type === 'income' ? "¿De qué es este ingreso?" : "¿En qué gastaste?"}
                         className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                     />
@@ -78,7 +101,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                         <input
                             name="date"
                             type="date"
-                            defaultValue={new Date().toISOString().split('T')[0]}
+                            defaultValue={initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
                             required
                             className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                         />
@@ -89,6 +112,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                         <select
                             name="category_id"
                             required
+                            defaultValue={initialData?.category_id}
                             className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                         >
                             <option value="" className="bg-zinc-900 text-white">Seleccionar...</option>
@@ -107,6 +131,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                         <label className="text-sm font-medium">Método de Pago</label>
                         <select
                             name="credit_card_id"
+                            defaultValue={initialData?.credit_card_id || 'none'}
                             className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                         >
                             <option value="none" className="bg-zinc-900 text-white">Efectivo / Débito</option>
@@ -124,7 +149,7 @@ export function TransactionForm({ categories, creditCards }: TransactionFormProp
                     disabled={loading}
                     className={`w-full py-2.5 font-medium rounded-lg transition-colors disabled:opacity-50 ${type === 'income' ? 'bg-primary hover:bg-emerald-600 text-primary-foreground' : 'bg-red-500 hover:bg-red-600 text-white'}`}
                 >
-                    {loading ? 'Guardando...' : type === 'income' ? 'Agregar Ingreso' : 'Agregar Gasto'}
+                    {loading ? 'Guardando...' : initialData ? 'Actualizar Transacción' : (type === 'income' ? 'Agregar Ingreso' : 'Agregar Gasto')}
                 </button>
             </form>
         </div>

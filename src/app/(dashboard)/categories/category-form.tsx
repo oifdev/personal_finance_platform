@@ -2,16 +2,21 @@
 
 import { useState } from 'react'
 import { IconPicker } from '@/components/ui/icon-picker'
-import { createCategory } from './actions'
+import { createCategory, updateCategory } from './actions'
 
 const COLORS = [
     '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4',
     '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#64748b'
 ]
 
-export function CategoryForm() {
-    const [icon, setIcon] = useState('Wallet')
-    const [color, setColor] = useState(COLORS[3]) // Emerald by default
+interface CategoryFormProps {
+    initialData?: any
+    onCancel?: () => void
+}
+
+export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
+    const [icon, setIcon] = useState(initialData?.icon || 'Wallet')
+    const [color, setColor] = useState(initialData?.color || COLORS[3])
     const [loading, setLoading] = useState(false)
 
     async function handleSubmit(formData: FormData) {
@@ -19,25 +24,53 @@ export function CategoryForm() {
         formData.append('icon', icon)
         formData.append('color', color)
 
-        await createCategory(formData)
-        setLoading(false);
-        // Reset form logic
-        (document.getElementById('category-form') as HTMLFormElement).reset()
+        if (initialData) {
+            await updateCategory(initialData.id, formData)
+            if (onCancel) onCancel()
+        } else {
+            await createCategory(formData)
+            // Reset form
+            setIcon('Wallet')
+            setColor(COLORS[3])
+            const form = document.getElementById('category-form') as HTMLFormElement
+            form.reset()
+        }
+        setLoading(false)
     }
 
     return (
         <div className="glass-card p-6 rounded-xl h-fit">
-            <h3 className="text-lg font-semibold mb-6">Agregar Nueva Categoría</h3>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold">{initialData ? 'Editar Categoría' : 'Agregar Nueva Categoría'}</h3>
+                {initialData && (
+                    <button onClick={onCancel} className="text-xs text-muted-foreground hover:text-white">
+                        Cancelar
+                    </button>
+                )}
+            </div>
+
             <form id="category-form" action={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Tipo</label>
                     <div className="flex gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="type" value="income" className="accent-primary" defaultChecked />
+                            <input
+                                type="radio"
+                                name="type"
+                                value="income"
+                                className="accent-primary"
+                                defaultChecked={initialData?.type === 'income' || !initialData}
+                            />
                             <span className="text-sm">Ingreso</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="type" value="expense" className="accent-primary" />
+                            <input
+                                type="radio"
+                                name="type"
+                                value="expense"
+                                className="accent-primary"
+                                defaultChecked={initialData?.type === 'expense'}
+                            />
                             <span className="text-sm">Gasto</span>
                         </label>
                     </div>
@@ -50,6 +83,7 @@ export function CategoryForm() {
                         name="name"
                         type="text"
                         required
+                        defaultValue={initialData?.name}
                         placeholder="Ej. Compras"
                         className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                     />
@@ -80,7 +114,7 @@ export function CategoryForm() {
                     disabled={loading}
                     className="w-full py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
                 >
-                    {loading ? 'Agregando...' : 'Agregar Categoría'}
+                    {loading ? 'Guardando...' : initialData ? 'Actualizar Categoría' : 'Agregar Categoría'}
                 </button>
             </form>
         </div>
