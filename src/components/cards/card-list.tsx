@@ -2,14 +2,27 @@
 
 import { useState } from 'react'
 import { payCreditCard, deleteCreditCard } from '@/app/(dashboard)/cards/actions'
-import { CreditCard, Trash2, Calendar } from 'lucide-react'
+import { CreditCard, Trash2, Calendar, Pencil } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
 
-export function CardList({ cards }: { cards: any[] }) {
+export function CardList({ cards, onEdit }: { cards: any[], onEdit: (card: any) => void }) {
+    const [deleteId, setDeleteId] = useState<string | null>(null)
+
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ConfirmModal
+                isOpen={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={() => deleteId && deleteCreditCard(deleteId)}
+                title="Eliminar Tarjeta"
+                description="¿Estás seguro de que deseas eliminar esta tarjeta? Se perderá el historial de saldo."
+                confirmText="Eliminar"
+                isDanger
+            />
+
             {cards.map(card => (
-                <div key={card.id} className="glass-card relative overflow-hidden rounded-xl p-6 transition-all hover:shadow-lg">
+                <div key={card.id} className="glass-card relative overflow-hidden rounded-xl p-6 transition-all hover:shadow-lg group">
                     {/* Visual Card Background Effect */}
                     <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -41,12 +54,20 @@ export function CardList({ cards }: { cards: any[] }) {
                         <div className="pt-4 border-t border-border mt-4 flex items-center justify-between">
                             <PayButton cardId={card.id} />
 
-                            <button
-                                onClick={() => deleteCreditCard(card.id)}
-                                className="text-muted-foreground hover:text-red-500 transition-colors p-2"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => onEdit(card)}
+                                    className="text-muted-foreground hover:text-primary transition-colors p-2"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={() => setDeleteId(card.id)}
+                                    className="text-muted-foreground hover:text-red-500 transition-colors p-2"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
 
                         {card.cutoff_day && card.payment_day && (

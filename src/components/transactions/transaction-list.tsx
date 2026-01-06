@@ -2,12 +2,15 @@
 
 import * as Icons from 'lucide-react'
 import { deleteTransaction } from '@/app/(dashboard)/transactions/actions'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Pencil } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
-
 import { getIcon } from '@/lib/icons'
+import { useState } from 'react'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
 
-export function TransactionList({ transactions }: { transactions: any[] }) {
+export function TransactionList({ transactions, onEdit }: { transactions: any[], onEdit: (tx: any) => void }) {
+    const [deleteId, setDeleteId] = useState<string | null>(null)
+
     if (!transactions.length) {
         return (
             <div className="p-8 text-center text-muted-foreground border border-dashed border-border rounded-xl">
@@ -18,6 +21,16 @@ export function TransactionList({ transactions }: { transactions: any[] }) {
 
     return (
         <div className="space-y-3">
+            <ConfirmModal
+                isOpen={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={() => deleteId && deleteTransaction(deleteId)}
+                title="Eliminar Transacción"
+                description="¿Estás seguro de que deseas eliminar esta transacción? Si está vinculada a una tarjeta de crédito, el saldo se revertirá."
+                confirmText="Eliminar"
+                isDanger
+            />
+
             {transactions.map((tx) => {
                 const Icon = getIcon(tx.categories?.icon || 'HelpCircle')
                 const isExpense = tx.type === 'expense'
@@ -48,12 +61,20 @@ export function TransactionList({ transactions }: { transactions: any[] }) {
                             <span className={`font-bold tabular-nums ${isExpense ? 'text-rose-500' : 'text-emerald-500'}`}>
                                 {isExpense ? '-' : '+'}{formatCurrency(Number(tx.amount))}
                             </span>
-                            <button
-                                onClick={() => deleteTransaction(tx.id)}
-                                className="text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </button>
+                            <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => onEdit(tx)}
+                                    className="text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={() => setDeleteId(tx.id)}
+                                    className="text-muted-foreground hover:text-red-500 transition-colors"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )
