@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { signout } from '@/app/login/actions'
 import {
     LayoutDashboard,
     ArrowRightLeft,
     Wallet,
     CreditCard,
-    Tags
+    Tags,
+    LogOut
 } from 'lucide-react'
 
 const navigation = [
@@ -51,6 +53,19 @@ export function MobileNav() {
                         </Link>
                     )
                 })}
+
+                {/* Logout Button */}
+                <form action={signout} className="flex flex-col items-center justify-center w-full h-full space-y-1">
+                    <button
+                        type="submit"
+                        className="flex flex-col items-center justify-center w-full h-full space-y-1 text-muted-foreground hover:text-red-500 transition-colors duration-200"
+                    >
+                        <div className="p-1 rounded-full transition-all duration-200">
+                            <LogOut className="h-5 w-5" />
+                        </div>
+                        <span className="text-[10px] font-medium">Salir</span>
+                    </button>
+                </form>
             </nav>
         </div>
     )

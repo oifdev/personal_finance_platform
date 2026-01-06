@@ -1,7 +1,8 @@
 'use client'
 
-import { login, signup } from './actions'
+import { login, signup, signInWithGoogle } from './actions'
 import { Check, Wallet } from 'lucide-react'
+import { GoogleLogo } from '@/components/ui/google-logo'
 import { useState } from 'react'
 
 export default function LoginPage() {
@@ -26,7 +27,7 @@ export default function LoginPage() {
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight">Finance Platform</h1>
                     <p className="text-muted-foreground mt-2">
-                        {isLogin ? 'Welcome back! Please enter your details.' : 'Create an account to start managing your finances.'}
+                        {isLogin ? '¡Bienvenido de nuevo! Introduce tus datos.' : 'Crea una cuenta para comenzar a administrar tus finanzas.'}
                     </p>
                 </div>
 
@@ -34,32 +35,32 @@ export default function LoginPage() {
                     <form action={handleSubmit} className="space-y-4">
                         {!isLogin && (
                             <div className="space-y-2">
-                                <label className="text-sm font-medium" htmlFor="fullName">Full Name</label>
+                                <label className="text-sm font-medium" htmlFor="fullName">Nombre completo</label>
                                 <input
                                     id="fullName"
                                     name="fullName"
                                     type="text"
                                     required
-                                    placeholder="John Doe"
+                                    placeholder="Carlos Flores"
                                     className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
                                 />
                             </div>
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium" htmlFor="email">Email</label>
+                            <label className="text-sm font-medium" htmlFor="email">Correo electrónico</label>
                             <input
                                 id="email"
                                 name="email"
                                 type="email"
                                 required
-                                placeholder="hello@example.com"
+                                placeholder="carlos.flores@example.com"
                                 className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium" htmlFor="password">Password</label>
+                            <label className="text-sm font-medium" htmlFor="password">Contraseña</label>
                             <input
                                 id="password"
                                 name="password"
@@ -80,19 +81,38 @@ export default function LoginPage() {
                             type="submit"
                             className="w-full py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-600 transition-colors focus:ring-4 focus:ring-primary/20"
                         >
-                            {isLogin ? 'Sign In' : 'Sign Up'}
+                            {isLogin ? 'Iniciar sesión' : 'Registrarse'}
+                        </button>
+                    </form>
+
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-border"></span>
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">O continuar con</span>
+                        </div>
+                    </div>
+
+                    <form action={signInWithGoogle}>
+                        <button
+                            type="submit"
+                            className="w-full py-2.5 bg-white text-zinc-900 font-medium rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <GoogleLogo className="w-5 h-5" />
+                            Google
                         </button>
                     </form>
 
                     <div className="mt-6 text-center text-sm">
                         <span className="text-muted-foreground">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
+                            {isLogin ? "¿No tienes una cuenta? " : "¿Ya tienes una cuenta? "}
                         </span>
                         <button
                             onClick={() => setIsLogin(!isLogin)}
                             className="font-medium text-primary hover:underline hover:text-emerald-400 transition-colors"
                         >
-                            {isLogin ? 'Sign up' : 'Log in'}
+                            {isLogin ? 'Registrarse' : 'Iniciar sesión'}
                         </button>
                     </div>
                 </div>
