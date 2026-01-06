@@ -10,7 +10,8 @@ import {
     Wallet,
     CreditCard,
     Tags,
-    LogOut
+    LogOut,
+    UserCircle
 } from 'lucide-react'
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
     { name: 'Pptos.', href: '/budget', icon: Wallet },
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
     { name: 'Categ.', href: '/categories', icon: Tags },
+    { name: 'Perfil', href: '/profile', icon: UserCircle },
 ]
 
 export function MobileNav() {
