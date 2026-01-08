@@ -28,7 +28,7 @@ export default function LoginPage() {
         if (result?.error) {
             console.error('Action error:', result.error)
             setError(result.error)
-        } else if (result?.message) {
+        } else if (result && 'message' in result && typeof result.message === 'string') {
             setSuccessMessage(result.message)
             // If forgot password success, maybe switch back to login or just show modal
             if (isForgotPassword) {
