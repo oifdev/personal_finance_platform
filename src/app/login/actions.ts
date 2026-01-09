@@ -4,11 +4,29 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
+import { z } from 'zod'
+
+const loginSchema = z.object({
+    email: z.string().email('Correo inválido').trim().toLowerCase(),
+    password: z.string().min(1, 'La contraseña es requerida')
+})
+
 export async function login(formData: FormData) {
     const supabase = await createClient()
 
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
+    const rawEmail = formData.get('email') as string
+    const rawPassword = formData.get('password') as string
+
+    const validatedFields = loginSchema.safeParse({
+        email: rawEmail,
+        password: rawPassword,
+    })
+
+    if (!validatedFields.success) {
+        return { error: validatedFields.error.flatten().fieldErrors.email?.[0] || 'Datos inválidos' }
+    }
+
+    const { email, password } = validatedFields.data
 
     const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -23,12 +41,27 @@ export async function login(formData: FormData) {
     redirect('/')
 }
 
+const signupSchema = z.object({
+    email: z.string().email('Correo inválido').trim().toLowerCase(),
+    password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    fullName: z.string().min(2, 'El nombre es muy corto').trim()
+})
+
 export async function signup(formData: FormData) {
     const supabase = await createClient()
 
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const fullName = formData.get('fullName') as string
+    const validatedFields = signupSchema.safeParse({
+        email: formData.get('email'),
+        password: formData.get('password'),
+        fullName: formData.get('fullName'),
+    })
+
+    if (!validatedFields.success) {
+        const errors = validatedFields.error.flatten().fieldErrors
+        return { error: errors.email?.[0] || errors.password?.[0] || errors.fullName?.[0] || 'Datos inválidos' }
+    }
+
+    const { email, password, fullName } = validatedFields.data
 
     const { data: { user }, error } = await supabase.auth.signUp({
         email,
@@ -47,11 +80,6 @@ export async function signup(formData: FormData) {
 
     if (user && user.identities && user.identities.length === 0) {
         return { error: 'Este correo ya está registrado.' }
-    }
-
-    // Check if email confirmation is required (implied if we are not redirected or session is null)
-    if (user && !user.aud) {
-        // Just a heuristic, usually you check settings.
     }
 
     // If successful signup but requires verification
@@ -87,9 +115,22 @@ export async function signInWithGoogle() {
     }
 }
 
+const forgotPasswordSchema = z.object({
+    email: z.string().email('Correo inválido').trim().toLowerCase()
+})
+
 export async function forgotPassword(formData: FormData) {
     const supabase = await createClient()
-    const email = formData.get('email') as string
+
+    const validatedFields = forgotPasswordSchema.safeParse({
+        email: formData.get('email')
+    })
+
+    if (!validatedFields.success) {
+        return { error: validatedFields.error.flatten().fieldErrors.email?.[0] || 'Correo inválido' }
+    }
+
+    const { email } = validatedFields.data
 
     // Redirect to dedicated update-password page after login via magic link
     // NOTE: NEXT_PUBLIC_SITE_URL must be correctly set for prod/mobile testing

@@ -1,2 +1,2 @@
-NEXT_PUBLIC_SUPABASE_URL=https://qlzjsnxzzeiqfrlqqfyw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsempzbnh6emVpcWZybHFxZnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5MDI3ODEsImV4cCI6MjA3NTQ3ODc4MX0.zXFIzoyr5u8MzApCeA0CvQXArMMoTkT_vjNV608egpU
+NEXT_PUBLIC_SUPABASE_URL=https://****************.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=************.****************

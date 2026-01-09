@@ -55,14 +55,14 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                     <button
                         type="button"
                         onClick={() => setType('income')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${type === 'income' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-white'}`}
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${type === 'income' ? 'bg-[#f1d77a] text-white shadow' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         Ingreso
                     </button>
                     <button
                         type="button"
                         onClick={() => setType('expense')}
-                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${type === 'expense' ? 'bg-red-500 text-white shadow' : 'text-muted-foreground hover:text-white'}`}
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${type === 'expense' ? 'bg-[#f1d77a] text-zinc-900 shadow' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         Gasto
                     </button>
@@ -113,11 +113,11 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                             name="category_id"
                             required
                             defaultValue={initialData?.category_id}
-                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
                         >
-                            <option value="" className="bg-zinc-900 text-white">Seleccionar...</option>
+                            <option value="" className="bg-surface text-foreground">Seleccionar...</option>
                             {filteredCategories.map(cat => (
-                                <option key={cat.id} value={cat.id} className="bg-zinc-900 text-white">
+                                <option key={cat.id} value={cat.id} className="bg-surface text-foreground">
                                     {cat.name}
                                 </option>
                             ))}
@@ -132,11 +132,11 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                         <select
                             name="credit_card_id"
                             defaultValue={initialData?.credit_card_id || 'none'}
-                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
                         >
-                            <option value="none" className="bg-zinc-900 text-white">Efectivo / Débito</option>
+                            <option value="none" className="bg-surface text-foreground">Efectivo / Débito</option>
                             {creditCards.map(card => (
-                                <option key={card.id} value={card.id} className="bg-zinc-900 text-white">
+                                <option key={card.id} value={card.id} className="bg-surface text-foreground">
                                     {card.name} (..{card.last_4_digits})
                                 </option>
                             ))}
@@ -147,7 +147,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full py-2.5 font-medium rounded-lg transition-colors disabled:opacity-50 ${type === 'income' ? 'bg-primary hover:bg-emerald-600 text-primary-foreground' : 'bg-red-500 hover:bg-red-600 text-white'}`}
+                    className={`w-full py-2.5 rounded-lg btn-primary font-bold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50`}
                 >
                     {loading ? 'Guardando...' : initialData ? 'Actualizar Transacción' : (type === 'income' ? 'Agregar Ingreso' : 'Agregar Gasto')}
                 </button>

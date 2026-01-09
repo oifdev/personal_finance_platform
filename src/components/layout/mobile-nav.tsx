@@ -11,16 +11,18 @@ import {
     CreditCard,
     Tags,
     LogOut,
-    UserCircle
+    Settings,
+    PieChart
 } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const navigation = [
     { name: 'Inicio', href: '/', icon: LayoutDashboard },
     { name: 'Transac.', href: '/transactions', icon: ArrowRightLeft },
     { name: 'Pptos.', href: '/budget', icon: Wallet },
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
-    { name: 'Categ.', href: '/categories', icon: Tags },
-    { name: 'Perfil', href: '/profile', icon: UserCircle },
+    { name: 'Reportes', href: '/reports', icon: PieChart },
+    { name: 'Config.', href: '/profile', icon: Settings },
 ]
 
 export function MobileNav() {
@@ -55,6 +57,12 @@ export function MobileNav() {
                         </Link>
                     )
                 })}
+
+                {/* Theme Toggle */}
+                <div className="flex flex-col items-center justify-center w-full h-full space-y-1">
+                    <ThemeToggle className="border-none bg-transparent hover:bg-transparent" />
+                    <span className="text-[10px] font-medium">Tema</span>
+                </div>
 
                 {/* Logout Button */}
                 <form action={signout} className="flex flex-col items-center justify-center w-full h-full space-y-1">

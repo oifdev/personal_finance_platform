@@ -105,11 +105,11 @@ function PayButton({ cardId }: { cardId: string }) {
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     placeholder="Monto"
-                    className="w-full px-2 py-1 bg-input border border-border rounded text-sm h-9"
+                    className="w-full px-2 py-1 bg-input border border-border rounded text-sm h-9 focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50"
                     autoFocus
                 />
-                <button onClick={handlePay} className="bg-primary text-primary-foreground px-3 h-9 rounded text-sm hover:bg-emerald-600">Pagar</button>
-                <button onClick={() => setIsPaying(false)} className="text-muted-foreground px-2 text-sm hover:text-white">x</button>
+                <button onClick={handlePay} className="bg-primary text-primary-foreground px-3 h-9 rounded text-sm hover:bg-[#f1d77a] hover:text-zinc-900 transition-colors font-bold">Pagar</button>
+                <button onClick={() => setIsPaying(false)} className="text-muted-foreground px-2 text-sm hover:text-foreground">x</button>
             </div>
         )
     }

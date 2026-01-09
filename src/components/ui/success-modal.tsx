@@ -46,7 +46,7 @@ export function SuccessModal({
 
                     <button
                         onClick={onClose}
-                        className="w-full py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-600 transition-colors"
+                        className="w-full py-2.5 rounded-lg btn-primary font-bold shadow-lg shadow-primary/20"
                     >
                         {buttonText}
                     </button>

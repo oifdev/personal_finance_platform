@@ -1,20 +1,36 @@
 'use client'
 
 import { login, signup, signInWithGoogle, forgotPassword } from './actions'
-import { Check, Wallet } from 'lucide-react'
+import { Wallet } from 'lucide-react'
 import { GoogleLogo } from '@/components/ui/google-logo'
 import { useState } from 'react'
 import { SuccessModal } from '@/components/ui/success-modal'
+import { PasswordField } from '@/components/ui/password-field'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true)
     const [isForgotPassword, setIsForgotPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
 
     async function handleSubmit(formData: FormData) {
         setError(null)
         setSuccessMessage(null)
+
+        // Validation for signup
+        if (!isLogin && !isForgotPassword) {
+            if (password !== confirmPassword) {
+                setError('Las contraseñas no coinciden')
+                return
+            }
+            if (password.length < 8) {
+                setError('La contraseña debe tener al menos 8 caracteres')
+                return
+            }
+        }
 
         let action;
         if (isForgotPassword) {
@@ -30,30 +46,45 @@ export default function LoginPage() {
             setError(result.error)
         } else if (result && 'message' in result && typeof result.message === 'string') {
             setSuccessMessage(result.message)
-            // If forgot password success, maybe switch back to login or just show modal
-            if (isForgotPassword) {
-                // Keep modal open, user understands they need to check email
+
+            // If signup or forgot password success, show modal and then potential redirect
+            if (!isLogin || isForgotPassword) {
+                // If signup success, maybe clear form and suggest login
+                // User requirement: "redirigir automáticamente al login"
+                setTimeout(() => {
+                    setSuccessMessage(null)
+                    setIsLogin(true)
+                    setIsForgotPassword(false)
+                }, 4000)
             }
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
+            <div className="absolute top-4 right-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <ThemeToggle />
+            </div>
             <SuccessModal
                 isOpen={!!successMessage}
                 onClose={() => setSuccessMessage(null)}
-                title="Registro Exitoso"
+                title={isForgotPassword ? "Correo Enviado" : (isLogin ? "Acceso Correcto" : "Registro Exitoso")}
                 description={successMessage || ''}
             />
 
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/20 text-primary mb-4 glass">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#38b6ff]/20 text-[#38b6ff] mb-4 glass">
                         <Wallet className="w-8 h-8" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight">Finance Platform</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        <span className="text-[#38b6ff]">OG</span>
+                        <span className="text-[#f1d77a]">Finance</span>
+                    </h1>
                     <p className="text-muted-foreground mt-2">
-                        {isLogin ? '¡Bienvenido de nuevo! Introduce tus datos.' : 'Crea una cuenta para comenzar a administrar tus finanzas.'}
+                        {isLogin ? '¡Bienvenido de nuevo! Introduce tus datos.' :
+                            isForgotPassword ? 'Recupera el acceso a tu cuenta.' :
+                                'Crea una cuenta para comenzar a administrar tus finanzas.'}
                     </p>
                 </div>
 
@@ -86,30 +117,43 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        {/* Hide Password field for forgot password */}
+                        {/* Password Fields */}
                         {!isForgotPassword && (
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium" htmlFor="password">Contraseña</label>
-                                    {isLogin && (
+                            <>
+                                <PasswordField
+                                    id="password"
+                                    name="password"
+                                    label="Contraseña"
+                                    placeholder="••••••••"
+                                    required
+                                    showValidation={!isLogin}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                {isLogin && (
+                                    <div className="flex justify-end mt-[-8px]">
                                         <button
                                             type="button"
                                             onClick={() => setIsForgotPassword(true)}
-                                            className="text-xs text-primary hover:underline"
+                                            className="text-xs text-[#38b6ff] hover:underline"
                                         >
                                             ¿Olvidaste tu contraseña?
                                         </button>
-                                    )}
-                                </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required={!isForgotPassword}
-                                    placeholder="••••••••"
-                                    className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm transition-all"
-                                />
-                            </div>
+                                    </div>
+                                )}
+                                {!isLogin && (
+                                    <PasswordField
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        label="Confirmar Contraseña"
+                                        placeholder="••••••••"
+                                        required
+                                        confirmValue={password}
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
+                                )}
+                            </>
                         )}
 
                         {error && (
@@ -120,7 +164,7 @@ export default function LoginPage() {
 
                         <button
                             type="submit"
-                            className="w-full py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-600 transition-colors focus:ring-4 focus:ring-primary/20"
+                            className="w-full py-2.5 rounded-lg btn-primary font-bold shadow-lg shadow-primary/20"
                         >
                             {isForgotPassword
                                 ? 'Enviar enlace de recuperación'
@@ -152,7 +196,7 @@ export default function LoginPage() {
                             <form action={signInWithGoogle}>
                                 <button
                                     type="submit"
-                                    className="w-full py-2.5 bg-white text-zinc-900 font-medium rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-2.5 bg-surface text-foreground font-medium rounded-lg hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2 border border-border shadow-sm"
                                 >
                                     <GoogleLogo className="w-5 h-5" />
                                     Google
@@ -164,8 +208,11 @@ export default function LoginPage() {
                                     {isLogin ? "¿No tienes una cuenta? " : "¿Ya tienes una cuenta? "}
                                 </span>
                                 <button
-                                    onClick={() => setIsLogin(!isLogin)}
-                                    className="font-medium text-primary hover:underline hover:text-emerald-400 transition-colors"
+                                    onClick={() => {
+                                        setIsLogin(!isLogin)
+                                        setError(null)
+                                    }}
+                                    className="font-medium text-[#38b6ff] hover:underline transition-colors"
                                 >
                                     {isLogin ? 'Registrarse' : 'Iniciar sesión'}
                                 </button>

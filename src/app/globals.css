@@ -8,50 +8,95 @@
 }
 
 :root {
-  --background: #09090b; /* Zinc 950 */
-  --foreground: #fafafa; /* Zinc 50 */
-  
-  /* Custom colors for finance app */
-  --primary: #10b981; /* Emerald 500 */
+  --background: #ffffff;
+  --foreground: #09090b;
+
+  /* Corporate Colors */
+  --corporate-blue: #38b6ff;
+  --corporate-yellow: #f1d77a;
+
+  --primary: var(--corporate-blue);
   --primary-foreground: #ffffff;
-  
-  --card: #18181b; /* Zinc 900 */
-  --card-foreground: #fafafa;
-  
-  --popover: #18181b;
-  --popover-foreground: #fafafa;
-  
-  --secondary: #27272a; /* Zinc 800 */
-  --secondary-foreground: #fafafa;
-  
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa; /* Zinc 400 */
-  
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
-  
-  --destructive: #ef4444; /* Red 500 */
+
+  --card: #ffffff;
+  --card-foreground: #09090b;
+
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+
+  --accent: var(--corporate-yellow);
+  --accent-foreground: #18181b;
+
+  --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #10b981;
-  
+
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --surface: #ffffff;
+  --ring: var(--corporate-blue);
+
   --radius: 0.5rem;
+
+  /* Theme-aware backgrounds */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(244, 244, 245, 0.8) 100%);
 }
 
-/* Glassmorphism utilities */
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+
+  --primary: var(--corporate-blue);
+  --primary-foreground: #ffffff;
+
+  --card: #18181b;
+  --card-foreground: #fafafa;
+
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+
+  --accent: var(--corporate-yellow);
+  --accent-foreground: #18181b;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+
+  --border: #27272a;
+  --input: #27272a;
+  --surface: #18181b;
+  --ring: var(--corporate-blue);
+
+  /* Theme-aware backgrounds for dark mode */
+  --glass-bg: rgba(24, 24, 27, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --card-bg: linear-gradient(145deg, rgba(39, 39, 42, 0.4) 0%, rgba(24, 24, 27, 0.4) 100%);
+}
+
+/* Glassmorphism utilities - Now theme-aware */
 .glass {
-  background: rgba(24, 24, 27, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-card {
-  background: linear-gradient(145deg, rgba(39, 39, 42, 0.4) 0%, rgba(24, 24, 27, 0.4) 100%);
+  background: var(--card-bg);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
@@ -68,13 +113,41 @@ body {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--secondary);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
+}
+
+/* Corporate Buttons & Utilities */
+.btn-primary {
+  background-color: var(--corporate-blue);
+  color: white !important;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--corporate-yellow);
+  color: #18181b !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--corporate-yellow);
+  color: #18181b !important;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--corporate-blue);
+  color: white !important;
+  transform: translateY(-1px);
 }
