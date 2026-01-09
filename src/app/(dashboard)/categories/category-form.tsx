@@ -85,7 +85,7 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
                         required
                         defaultValue={initialData?.name}
                         placeholder="Ej. Compras"
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
                     />
                 </div>
 
@@ -112,7 +112,7 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg btn-primary font-bold shadow-lg shadow-primary/20 disabled:opacity-50"
                 >
                     {loading ? 'Guardando...' : initialData ? 'Actualizar Categoría' : 'Agregar Categoría'}
                 </button>

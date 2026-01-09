@@ -46,16 +46,13 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                     <label className="text-sm font-medium">Categoría</label>
                     <select
                         name="category_id"
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50"
                         required
                         defaultValue={initialData?.category_id || 'global'}
-                    // Disable changing category in edit mode to avoid confusion or duplicates? 
-                    // Actually, upsert logic handles it, but maybe better to lock it visually if editing.
-                    // Let's keep it open but user knows they are editing "a budget".
                     >
-                        <option value="global" className="bg-zinc-900 text-white">Global (Todos los Gastos)</option>
+                        <option value="global" className="bg-surface text-foreground">Global (Todos los Gastos)</option>
                         {categories?.map(c => (
-                            <option key={c.id} value={c.id} className="bg-zinc-900 text-white">{c.name}</option>
+                            <option key={c.id} value={c.id} className="bg-surface text-foreground">{c.name}</option>
                         ))}
                     </select>
                 </div>
@@ -70,14 +67,14 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                             required
                             defaultValue={initialData?.amount}
                             placeholder="500.00"
-                            className="w-full pl-8 pr-3 py-2 bg-input border border-border rounded-lg text-sm"
+                            className="w-full pl-8 pr-3 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50"
                         />
                     </div>
                 </div>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-2 bg-primary text-primary-foreground rounded-lg hover:bg-emerald-600 transition-colors font-medium disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg btn-primary font-bold shadow-lg shadow-primary/20 disabled:opacity-50"
                 >
                     {loading ? 'Guardando...' : initialData ? 'Actualizar Presupuesto' : 'Guardar Presupuesto'}
                 </button>

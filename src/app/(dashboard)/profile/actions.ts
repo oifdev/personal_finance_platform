@@ -37,27 +37,39 @@ export async function getProfile() {
     return { data: profile }
 }
 
+import { z } from 'zod'
+
+const profileSchema = z.object({
+    full_name: z.string().min(2, 'El nombre es muy corto').trim(),
+    username: z.string().min(2, 'El nombre de usuario es muy corto').trim().toLowerCase(),
+    website: z.string().url('URL inválida').or(z.literal('')).nullable().optional(),
+    currency: z.string().min(1, 'La moneda es requerida'),
+    email: z.string().email('Correo inválido').trim().toLowerCase(),
+    avatar_url: z.string().nullable().optional(),
+})
+
 export async function updateProfile(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthorized' }
 
-    const full_name = formData.get('full_name') as string
-    const username = formData.get('username') as string
-    const website = formData.get('website') as string
-    const avatar_url = formData.get('avatar_url') as string
-    const currency = formData.get('currency') as string
-    // Email is usually read-only from auth, but if we store it in profile we can update it (contact email)
-    const email = formData.get('email') as string
+    const validatedFields = profileSchema.safeParse({
+        full_name: formData.get('full_name'),
+        username: formData.get('username'),
+        website: formData.get('website'),
+        avatar_url: formData.get('avatar_url'),
+        currency: formData.get('currency'),
+        email: formData.get('email'),
+    })
+
+    if (!validatedFields.success) {
+        const errors = validatedFields.error.flatten().fieldErrors
+        return { error: Object.values(errors).flat()[0] || 'Datos inválidos' }
+    }
 
     const updates = {
         id: user.id,
-        full_name,
-        username,
-        website,
-        avatar_url,
-        currency,
-        email,
+        ...validatedFields.data,
         updated_at: new Date().toISOString(),
     }
 
@@ -100,21 +112,38 @@ export async function uploadAvatar(formData: FormData) {
     return { url: publicUrl }
 }
 
+const passwordSchema = z.object({
+    password: z.string()
+        .min(8, 'Mínimo 8 caracteres')
+        .regex(/[A-Z]/, 'Al menos una mayúscula')
+        .regex(/[a-z]/, 'Al menos una minúscula')
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Al menos un carácter especial'),
+    confirmPassword: z.string()
+}).refine(data => data.password === data.confirmPassword, {
+    message: 'Las contraseñas no coinciden',
+    path: ['confirmPassword']
+})
+
 export async function updatePassword(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthorized' }
 
-    const password = formData.get('password') as string || formData.get('newPassword') as string // Handle both field names used in different forms
-    const confirmPassword = formData.get('confirmPassword') as string
+    const rawPassword = formData.get('password') as string || formData.get('newPassword') as string
+    const rawConfirm = formData.get('confirmPassword') as string
 
-    if (!password || password.length < 6) {
-        return { error: 'La contraseña debe tener al menos 6 caracteres.' }
+    const validatedFields = passwordSchema.safeParse({
+        password: rawPassword,
+        confirmPassword: rawConfirm
+    })
+
+    if (!validatedFields.success) {
+        const error = validatedFields.error.flatten().fieldErrors.password?.[0] ||
+            validatedFields.error.flatten().fieldErrors.confirmPassword?.[0]
+        return { error: error || 'Contraseña inválida' }
     }
 
-    if (password !== confirmPassword) {
-        return { error: 'Las contraseñas no coinciden.' }
-    }
+    const { password } = validatedFields.data
 
     const { error } = await supabase.auth.updateUser({ password })
 

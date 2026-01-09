@@ -53,8 +53,8 @@ export default async function ReportsPage() {
     return (
         <div className="space-y-8">
             <div>
-                <h2 className="text-3xl font-bold tracking-tight">Reports</h2>
-                <p className="text-muted-foreground mt-1">Visualize your financial health.</p>
+                <h2 className="text-3xl font-bold tracking-tight">Reportes</h2>
+                <p className="text-muted-foreground mt-1">Visualiza tu salud financiera</p>
             </div>
 
             <FinancialCharts

@@ -15,6 +15,8 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { signout } from '@/app/login/actions'
 
+import { ThemeToggle } from '@/components/theme-toggle'
+
 const navigation = [
     { name: 'Resumen', href: '/', icon: LayoutDashboard },
     { name: 'Transacciones', href: '/transactions', icon: ArrowRightLeft },
@@ -22,22 +24,25 @@ const navigation = [
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
     { name: 'Categorías', href: '/categories', icon: Wallet },
     { name: 'Reportes', href: '/reports', icon: PieChart },
-    // { name: 'Investments', href: '/investments', icon: TrendingUp }, // Optional
 ]
 
 export default function Sidebar() {
     const pathname = usePathname()
 
     return (
-        <div className="flex h-screen flex-col justify-between border-r border-border bg-card/50 glass w-64 hidden md:flex fixed left-0 top-0">
+        <div className="flex h-screen flex-col justify-between border-r border-border bg-background/50 glass w-64 hidden md:flex fixed left-0 top-0">
             <div className="px-4 py-6">
-                <div className="flex items-center gap-2 px-2 mb-8">
-                    <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                        <Wallet className="h-5 w-5" />
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-2 px-2">
+                        <div className="h-8 w-8 rounded-lg bg-[#38b6ff]/20 flex items-center justify-center text-[#38b6ff]">
+                            <Wallet className="h-5 w-5" />
+                        </div>
+                        <span className="text-xl font-bold">
+                            <span className="text-[#38b6ff]">OG</span>
+                            <span className="text-[#f1d77a]">Finance</span>
+                        </span>
                     </div>
-                    <span className="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-                        Finance
-                    </span>
+                    <ThemeToggle />
                 </div>
 
                 <nav className="space-y-1">
@@ -50,11 +55,11 @@ export default function Sidebar() {
                                 className={cn(
                                     "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group",
                                     isActive
-                                        ? "bg-primary/10 text-primary"
-                                        : "text-muted-foreground hover:bg-white/5 hover:text-white"
+                                        ? "bg-primary/10 text-primary shadow-sm"
+                                        : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
                                 )}
                             >
-                                <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground group-hover:text-white")} />
+                                <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary")} />
                                 {item.name}
                             </Link>
                         )
@@ -68,11 +73,11 @@ export default function Sidebar() {
                         className={cn(
                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group",
                             pathname === '/profile'
-                                ? "bg-primary/10 text-primary"
-                                : "text-muted-foreground hover:bg-white/5 hover:text-white"
+                                ? "bg-primary/10 text-primary shadow-sm"
+                                : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
                         )}
                     >
-                        <Settings className={cn("h-4 w-4", pathname === '/profile' ? "text-primary" : "text-muted-foreground group-hover:text-white")} />
+                        <Settings className={cn("h-4 w-4", pathname === '/profile' ? "text-primary" : "text-muted-foreground group-hover:text-primary")} />
                         Configuración
                     </Link>
                 </div>
