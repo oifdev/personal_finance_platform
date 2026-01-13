@@ -19,9 +19,10 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const navigation = [
     { name: 'Inicio', href: '/', icon: LayoutDashboard },
     { name: 'Transac.', href: '/transactions', icon: ArrowRightLeft },
-    { name: 'Pptos.', href: '/budget', icon: Wallet },
+    { name: 'Categorías', href: '/categories', icon: Tags },
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
     { name: 'Reportes', href: '/reports', icon: PieChart },
+    { name: 'Pptos.', href: '/budget', icon: Wallet },
     { name: 'Config.', href: '/profile', icon: Settings },
 ]
 

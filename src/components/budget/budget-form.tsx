@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { setBudget } from '@/app/(dashboard)/budget/actions'
+import { setBudget, getBudgetSuggestion } from '@/app/(dashboard)/budget/actions'
+import { Sparkles } from 'lucide-react'
 
 interface BudgetFormProps {
     categories: any[]
@@ -11,6 +12,22 @@ interface BudgetFormProps {
 
 export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProps) {
     const [loading, setLoading] = useState(false)
+    const [isSuggesting, setIsSuggesting] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState(initialData?.category_id || 'global')
+
+    async function handleGetSuggestion() {
+        setIsSuggesting(true)
+        const result = await getBudgetSuggestion(selectedCategory)
+        if (result.suggestion) {
+            const amountInput = document.getElementById('budget-amount') as HTMLInputElement
+            if (amountInput) {
+                amountInput.value = result.suggestion.toString()
+            }
+        } else if (result.error) {
+            alert(result.error)
+        }
+        setIsSuggesting(false)
+    }
 
     async function handleSubmit(formData: FormData) {
         setLoading(true)
@@ -48,7 +65,8 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                         name="category_id"
                         className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50"
                         required
-                        defaultValue={initialData?.category_id || 'global'}
+                        defaultValue={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
                     >
                         <option value="global" className="bg-surface text-foreground">Global (Todos los Gastos)</option>
                         {categories?.map(c => (
@@ -57,10 +75,26 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                     </select>
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Límite Mensual (L)</label>
+                    <div className="flex justify-between items-center">
+                        <label className="text-sm font-medium">Límite Mensual (L)</label>
+                        <button
+                            type="button"
+                            onClick={handleGetSuggestion}
+                            disabled={isSuggesting}
+                            className="text-[10px] flex items-center gap-1 text-primary hover:text-primary/80 font-bold transition-colors disabled:opacity-50"
+                        >
+                            {isSuggesting ? (
+                                <div className="h-2 w-2 border-border border-t-primary rounded-full animate-spin" />
+                            ) : (
+                                <Sparkles className="h-3 w-3" />
+                            )}
+                            Sugerencia IA
+                        </button>
+                    </div>
                     <div className="relative">
                         <span className="absolute left-3 top-2.5 text-muted-foreground/50">L</span>
                         <input
+                            id="budget-amount"
                             name="amount"
                             type="number"
                             step="0.01"
