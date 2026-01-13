@@ -125,6 +125,7 @@ export async function analyzeBudget(transactions: any[], budgets: any[]) {
     return result || "OGFINANCE no pudo analizar tus finanzas en este momento.";
 }
 
+
 export async function suggestBudgetLimit(categoryName: string, history: any[]) {
     const prompt = `
     Basado en el historial de gastos para la categoría "${categoryName}":
