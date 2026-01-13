@@ -9,12 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@google/generative-ai": "^0.24.1",
+=======
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+<<<<<<< HEAD
     "dotenv": "^17.2.3",
+=======
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",

@@ -19,10 +19,16 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const navigation = [
     { name: 'Inicio', href: '/', icon: LayoutDashboard },
     { name: 'Transac.', href: '/transactions', icon: ArrowRightLeft },
+<<<<<<< HEAD
     { name: 'Categorías', href: '/categories', icon: Tags },
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
     { name: 'Reportes', href: '/reports', icon: PieChart },
     { name: 'Pptos.', href: '/budget', icon: Wallet },
+=======
+    { name: 'Pptos.', href: '/budget', icon: Wallet },
+    { name: 'Tarjetas', href: '/cards', icon: CreditCard },
+    { name: 'Reportes', href: '/reports', icon: PieChart },
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
     { name: 'Config.', href: '/profile', icon: Settings },
 ]
 

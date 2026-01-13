@@ -2,8 +2,11 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+<<<<<<< HEAD
 import { analyzeBudget, suggestBudgetLimit } from '@/lib/ai'
 import { startOfMonth, subMonths } from 'date-fns'
+=======
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
 
 export async function setBudget(formData: FormData) {
     const supabase = await createClient()
@@ -55,6 +58,7 @@ export async function deleteBudget(id: string) {
     revalidatePath('/budget')
     return { success: true }
 }
+<<<<<<< HEAD
 
 export async function getAIInsights() {
     const supabase = await createClient()
@@ -147,3 +151,5 @@ export async function getBudgetSuggestion(categoryId: string | 'global') {
 
     return { suggestion }
 }
+=======
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39

@@ -1,8 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+<<<<<<< HEAD
 import { setBudget, getBudgetSuggestion } from '@/app/(dashboard)/budget/actions'
 import { Sparkles } from 'lucide-react'
+=======
+import { setBudget } from '@/app/(dashboard)/budget/actions'
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
 
 interface BudgetFormProps {
     categories: any[]
@@ -12,6 +16,7 @@ interface BudgetFormProps {
 
 export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProps) {
     const [loading, setLoading] = useState(false)
+<<<<<<< HEAD
     const [isSuggesting, setIsSuggesting] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState(initialData?.category_id || 'global')
 
@@ -28,6 +33,8 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
         }
         setIsSuggesting(false)
     }
+=======
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
 
     async function handleSubmit(formData: FormData) {
         setLoading(true)
@@ -65,8 +72,12 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                         name="category_id"
                         className="w-full px-3 py-2 bg-input border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50"
                         required
+<<<<<<< HEAD
                         defaultValue={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
+=======
+                        defaultValue={initialData?.category_id || 'global'}
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
                     >
                         <option value="global" className="bg-surface text-foreground">Global (Todos los Gastos)</option>
                         {categories?.map(c => (
@@ -75,6 +86,7 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                     </select>
                 </div>
                 <div className="space-y-2">
+<<<<<<< HEAD
                     <div className="flex justify-between items-center">
                         <label className="text-sm font-medium">Límite Mensual (L)</label>
                         <button
@@ -95,6 +107,12 @@ export function BudgetForm({ categories, initialData, onCancel }: BudgetFormProp
                         <span className="absolute left-3 top-2.5 text-muted-foreground/50">L</span>
                         <input
                             id="budget-amount"
+=======
+                    <label className="text-sm font-medium">Límite Mensual (L)</label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-muted-foreground/50">L</span>
+                        <input
+>>>>>>> 17ec09116087da1a5bc493a4776d82b69d2d3f39
                             name="amount"
                             type="number"
                             step="0.01"
