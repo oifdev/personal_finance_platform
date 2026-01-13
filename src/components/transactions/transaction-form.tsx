@@ -79,7 +79,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                             required
                             defaultValue={initialData?.amount}
                             placeholder="0.00"
-                            className="w-full pl-8 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                            className="w-full pl-8 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-foreground"
                         />
                     </div>
                 </div>
@@ -91,7 +91,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                         type="text"
                         defaultValue={initialData?.description}
                         placeholder={type === 'income' ? "¿De qué es este ingreso?" : "¿En qué gastaste?"}
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-foreground"
                     />
                 </div>
 
@@ -103,7 +103,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                             type="date"
                             defaultValue={initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
                             required
-                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-foreground"
                         />
                     </div>
 
@@ -113,7 +113,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                             name="category_id"
                             required
                             defaultValue={initialData?.category_id}
-                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm text-foreground"
                         >
                             <option value="" className="bg-surface text-foreground">Seleccionar...</option>
                             {filteredCategories.map(cat => (
@@ -132,7 +132,7 @@ export function TransactionForm({ categories, creditCards, initialData, onCancel
                         <select
                             name="credit_card_id"
                             defaultValue={initialData?.credit_card_id || 'none'}
-                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm text-foreground"
                         >
                             <option value="none" className="bg-surface text-foreground">Efectivo / Débito</option>
                             {creditCards.map(card => (

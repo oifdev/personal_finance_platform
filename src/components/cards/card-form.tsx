@@ -55,24 +55,24 @@ export function CardForm({ initialData, onCancel }: CardFormProps) {
                 <form action={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Nombre de la Tarjeta</label>
-                        <input name="name" defaultValue={initialData?.name} required placeholder="Visa Gold" className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
+                        <input name="name" defaultValue={initialData?.name} required placeholder="Visa Gold" className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Últimos 4 Dígitos</label>
-                        <input name="last_4_digits" defaultValue={initialData?.last_4_digits} placeholder="1234" maxLength={4} className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
+                        <input name="last_4_digits" defaultValue={initialData?.last_4_digits} placeholder="1234" maxLength={4} className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Límite de Crédito (L)</label>
-                        <input name="limit" type="number" step="0.01" defaultValue={initialData?.credit_limit} required placeholder="0.00" className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
+                        <input name="limit" type="number" step="0.01" defaultValue={initialData?.credit_limit} required placeholder="0.00" className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Día de Corte</label>
-                            <input name="cutoff_day" type="number" min="1" max="31" defaultValue={initialData?.cutoff_day} placeholder="Día (5)" className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
+                            <input name="cutoff_day" type="number" min="1" max="31" defaultValue={initialData?.cutoff_day} placeholder="Día (5)" className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Día de Pago</label>
-                            <input name="payment_day" type="number" min="1" max="31" defaultValue={initialData?.payment_day} placeholder="Día (20)" className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
+                            <input name="payment_day" type="number" min="1" max="31" defaultValue={initialData?.payment_day} placeholder="Día (20)" className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50" />
                         </div>
                     </div>
 

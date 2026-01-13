@@ -20,7 +20,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 const navigation = [
     { name: 'Resumen', href: '/', icon: LayoutDashboard },
     { name: 'Transacciones', href: '/transactions', icon: ArrowRightLeft },
-    { name: 'Presupuestos', href: '/budget', icon: Wallet },
+    { name: 'Presupuestos', href: '/budget', icon: TrendingUp },
     { name: 'Tarjetas', href: '/cards', icon: CreditCard },
     { name: 'Categorías', href: '/categories', icon: Wallet },
     { name: 'Reportes', href: '/reports', icon: PieChart },
