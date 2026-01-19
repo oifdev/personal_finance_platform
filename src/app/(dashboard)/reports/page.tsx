@@ -4,10 +4,14 @@ import { FinancialCharts } from '@/components/reports/financial-charts'
 export default async function ReportsPage() {
     const supabase = await createClient()
 
-    // Fetch all transactions
+    // Fetch all transactions with relations
     const { data: transactions } = await supabase
         .from('transactions')
-        .select('*, categories(name, color)')
+        .select(`
+            *,
+            categories (name, color),
+            transaction_types (code, name)
+        `)
         .order('date', { ascending: true })
 
     if (!transactions) return <div>No data found</div>
@@ -16,30 +20,29 @@ export default async function ReportsPage() {
     // 1. Monthly Data
     const monthlyMap = new Map()
 
-    transactions.forEach(tx => {
+    transactions.forEach((tx: any) => {
         const date = new Date(tx.date)
         const monthKey = date.toLocaleString('default', { month: 'short' })
+        const typeCode = tx.transaction_types?.code
 
         if (!monthlyMap.has(monthKey)) {
             monthlyMap.set(monthKey, { name: monthKey, income: 0, expense: 0 })
         }
 
         const entry = monthlyMap.get(monthKey)
-        if (tx.type === 'income') {
+        if (typeCode === 'income') {
             entry.income += Number(tx.amount)
-        } else if (tx.type === 'expense') {
+        } else if (typeCode === 'expense') {
             entry.expense += Number(tx.amount)
         }
     })
 
-    // Convert Map to Array and sort? (Assuming data came sorted by date, months might be in order if year is same. 
-    // Ideally need year support but simplifying for now)
     const monthlyData = Array.from(monthlyMap.values())
 
     // 2. Category Data (Expenses only)
     const categoryMap = new Map()
-    transactions.filter(t => t.type === 'expense').forEach(tx => {
-        const catName = tx.categories?.name || 'Uncategorized'
+    transactions.filter((t: any) => t.transaction_types?.code === 'expense').forEach((tx: any) => {
+        const catName = tx.categories?.name || 'Sin Categoría'
         const color = tx.categories?.color || '#888'
 
         if (!categoryMap.has(catName)) {

@@ -3,18 +3,40 @@
 import { login, signup, signInWithGoogle, forgotPassword } from './actions'
 import { Wallet } from 'lucide-react'
 import { GoogleLogo } from '@/components/ui/google-logo'
-import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
 import { SuccessModal } from '@/components/ui/success-modal'
 import { PasswordField } from '@/components/ui/password-field'
 import { ThemeToggle } from '@/components/theme-toggle'
 
-export default function LoginPage() {
+function LoginForm() {
+    const searchParams = useSearchParams()
+    const errorParam = searchParams.get('error')
+
     const [isLogin, setIsLogin] = useState(true)
     const [isForgotPassword, setIsForgotPassword] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(errorParam)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+
+    useEffect(() => {
+        if (errorParam) {
+            setError(errorParam)
+        } else {
+            // Check for hash parameters (e.g. #error=access_denied&error_description=...)
+            const hash = window.location.hash
+            if (hash) {
+                const params = new URLSearchParams(hash.substring(1)) // remove #
+                const hashError = params.get('error_description') || params.get('error')
+                if (hashError) {
+                    // Clean up the URL
+                    window.history.replaceState(null, '', window.location.pathname)
+                    setError(decodeURIComponent(hashError).replace(/\+/g, ' '))
+                }
+            }
+        }
+    }, [errorParam])
 
     async function handleSubmit(formData: FormData) {
         setError(null)
@@ -222,5 +244,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
+            <LoginForm />
+        </Suspense>
     )
 }

@@ -3,7 +3,20 @@ import { CategoriesManager } from './categories-manager'
 
 export default async function CategoriesPage() {
     const supabase = await createClient()
-    const { data: categories } = await supabase.from('categories').select('*').order('created_at', { ascending: false })
+
+    // Fetch categories with type relation
+    const { data: categories } = await supabase
+        .from('categories')
+        .select('*, category_types(code, name), parent_category:parent_category_id(id, name)')
+        .eq('is_active', true)
+        .order('sort_order')
+        .order('created_at', { ascending: false })
+
+    // Fetch category types for the form
+    const { data: categoryTypes } = await supabase
+        .from('category_types')
+        .select('*')
+        .order('code')
 
     return (
         <div className="space-y-8">
@@ -14,7 +27,10 @@ export default async function CategoriesPage() {
                 </div>
             </div>
 
-            <CategoriesManager categories={categories || []} />
+            <CategoriesManager
+                categories={categories || []}
+                categoryTypes={categoryTypes || []}
+            />
         </div>
     )
 }

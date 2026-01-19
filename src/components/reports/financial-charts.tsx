@@ -45,7 +45,7 @@ export function FinancialCharts({ monthlyData, categoryData, transactions }: Cha
     const downloadPDF = () => {
         const data = transactions.map(t => ({
             date: new Date(t.date).toLocaleDateString(),
-            type: t.type,
+            type: t.transaction_types?.name || t.type,
             category: t.categories?.name,
             description: t.description,
             amount: t.amount
@@ -56,7 +56,7 @@ export function FinancialCharts({ monthlyData, categoryData, transactions }: Cha
     const downloadExcel = () => {
         const data = transactions.map(t => ({
             Date: new Date(t.date).toLocaleDateString(),
-            Type: t.type,
+            Type: t.transaction_types?.name || t.type,
             Category: t.categories?.name,
             Description: t.description,
             Amount: t.amount

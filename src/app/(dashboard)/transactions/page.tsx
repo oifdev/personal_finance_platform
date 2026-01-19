@@ -4,20 +4,31 @@ import { TransactionsManager } from './transactions-manager'
 export default async function TransactionsPage() {
     const supabase = await createClient()
 
-    // Fetch Categories
-    const { data: categories } = await supabase.from('categories').select('*').order('name')
+    // Fetch Categories with type relation
+    const { data: categories } = await supabase
+        .from('categories')
+        .select('*, category_types(code, name)')
+        .eq('is_active', true)
+        .order('name')
 
-    // Fetch Credit Cards
-    const { data: cards } = await supabase.from('credit_cards').select('*').order('name')
+    // Fetch Accounts (replaces credit_cards)
+    const { data: accounts } = await supabase
+        .from('accounts')
+        .select('*, account_types(code, name), currencies(symbol)')
+        .eq('is_active', true)
+        .order('is_default', { ascending: false })
+        .order('name')
 
-    // Fetch Transactions with relations
+    // Fetch Transactions with new relations
     const { data: transactions } = await supabase
         .from('transactions')
         .select(`
-        *,
-        categories (name, icon, color),
-        credit_cards (name)
-    `)
+            *,
+            transaction_types (code, name),
+            categories (name, icon, color, category_types(code)),
+            accounts:account_id (name, account_types(code), currencies(symbol)),
+            destination_account:destination_account_id (name)
+        `)
         .order('date', { ascending: false })
         .order('created_at', { ascending: false })
 
@@ -31,7 +42,7 @@ export default async function TransactionsPage() {
             <TransactionsManager
                 transactions={transactions || []}
                 categories={categories || []}
-                creditCards={cards || []}
+                accounts={accounts || []}
             />
         </div>
     )

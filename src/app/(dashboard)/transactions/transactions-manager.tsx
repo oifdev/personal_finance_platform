@@ -3,14 +3,15 @@
 import { useState } from 'react'
 import { TransactionForm } from '@/components/transactions/transaction-form'
 import { TransactionList } from '@/components/transactions/transaction-list'
+import type { Transaction, Category, Account } from '@/types/database'
 
 interface TransactionsManagerProps {
     transactions: any[]
     categories: any[]
-    creditCards: any[]
+    accounts: any[] // Changed from creditCards
 }
 
-export function TransactionsManager({ transactions, categories, creditCards }: TransactionsManagerProps) {
+export function TransactionsManager({ transactions, categories, accounts }: TransactionsManagerProps) {
     const [editingTransaction, setEditingTransaction] = useState<any | null>(null)
 
     return (
@@ -18,7 +19,7 @@ export function TransactionsManager({ transactions, categories, creditCards }: T
             <div className="lg:col-span-1">
                 <TransactionForm
                     categories={categories}
-                    creditCards={creditCards}
+                    accounts={accounts}
                     initialData={editingTransaction}
                     onCancel={() => setEditingTransaction(null)}
                     key={editingTransaction?.id || 'new'}
@@ -26,7 +27,7 @@ export function TransactionsManager({ transactions, categories, creditCards }: T
             </div>
 
             <div className="lg:col-span-2 space-y-4">
-                <h3 className="text-xl font-semibold">History</h3>
+                <h3 className="text-xl font-semibold">Historial</h3>
                 <TransactionList
                     transactions={transactions}
                     onEdit={setEditingTransaction}

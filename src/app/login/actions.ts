@@ -119,8 +119,11 @@ const forgotPasswordSchema = z.object({
     email: z.string().email('Correo inválido').trim().toLowerCase()
 })
 
+import { headers } from 'next/headers'
+
 export async function forgotPassword(formData: FormData) {
     const supabase = await createClient()
+    const origin = (await headers()).get('origin')
 
     const validatedFields = forgotPasswordSchema.safeParse({
         email: formData.get('email')
@@ -133,9 +136,9 @@ export async function forgotPassword(formData: FormData) {
     const { email } = validatedFields.data
 
     // Redirect to dedicated update-password page after login via magic link
-    // NOTE: NEXT_PUBLIC_SITE_URL must be correctly set for prod/mobile testing
+    // Use dynamic origin to support both localhost and production
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/update-password`,
+        redirectTo: `${origin}/auth/callback?next=/update-password`,
     })
 
     if (error) {

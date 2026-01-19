@@ -26,6 +26,11 @@ export default function UpdatePasswordPage() {
             const result = await updatePassword(formData)
 
             if (result.error) {
+                if (result.error === 'Unauthorized') {
+                    alert('Tu sesión ha expirado o es inválida. Por favor solicita un nuevo enlace de recuperación.')
+                    router.push('/login')
+                    return
+                }
                 alert(result.error)
                 return
             }

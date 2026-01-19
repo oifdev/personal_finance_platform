@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { IconPicker } from '@/components/ui/icon-picker'
 import { createCategory, updateCategory } from './actions'
+import type { CategoryType, Category } from '@/types/database'
 
 const COLORS = [
     '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4',
@@ -11,13 +12,26 @@ const COLORS = [
 
 interface CategoryFormProps {
     initialData?: any
+    categoryTypes?: any[]
+    categories?: any[] // For parent category selection
     onCancel?: () => void
 }
 
-export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
+export function CategoryForm({ initialData, categoryTypes = [], categories = [], onCancel }: CategoryFormProps) {
     const [icon, setIcon] = useState(initialData?.icon || 'Wallet')
     const [color, setColor] = useState(initialData?.color || COLORS[3])
     const [loading, setLoading] = useState(false)
+    const [selectedType, setSelectedType] = useState(
+        initialData?.category_types?.code || initialData?.type || 'income'
+    )
+
+    // Filter categories for parent selection (same type, not self, no children of self)
+    const availableParents = categories.filter(c => {
+        const typeCode = c.category_types?.code || c.type
+        return typeCode === selectedType &&
+            c.id !== initialData?.id &&
+            !c.parent_category_id // Only top-level categories can be parents
+    })
 
     async function handleSubmit(formData: FormData) {
         setLoading(true)
@@ -33,7 +47,7 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
             setIcon('Wallet')
             setColor(COLORS[3])
             const form = document.getElementById('category-form') as HTMLFormElement
-            form.reset()
+            form?.reset()
         }
         setLoading(false)
     }
@@ -59,9 +73,10 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
                                 name="type"
                                 value="income"
                                 className="accent-primary"
-                                defaultChecked={initialData?.type === 'income' || !initialData}
+                                checked={selectedType === 'income'}
+                                onChange={() => setSelectedType('income')}
                             />
-                            <span className="text-sm">Ingreso</span>
+                            <span className="text-sm text-emerald-500">Ingreso</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input
@@ -69,9 +84,10 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
                                 name="type"
                                 value="expense"
                                 className="accent-primary"
-                                defaultChecked={initialData?.type === 'expense'}
+                                checked={selectedType === 'expense'}
+                                onChange={() => setSelectedType('expense')}
                             />
-                            <span className="text-sm">Gasto</span>
+                            <span className="text-sm text-rose-500">Gasto</span>
                         </label>
                     </div>
                 </div>
@@ -85,9 +101,31 @@ export function CategoryForm({ initialData, onCancel }: CategoryFormProps) {
                         required
                         defaultValue={initialData?.name}
                         placeholder="Ej. Compras"
-                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm text-foreground"
                     />
                 </div>
+
+                {/* Parent Category Selection */}
+                {availableParents.length > 0 && (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Categoría Padre (Opcional)</label>
+                        <select
+                            name="parent_category_id"
+                            defaultValue={initialData?.parent_category_id || ''}
+                            className="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#38b6ff]/50 text-sm text-foreground"
+                        >
+                            <option value="" className="bg-surface text-foreground">Sin categoría padre</option>
+                            {availableParents.map(cat => (
+                                <option key={cat.id} value={cat.id} className="bg-surface text-foreground">
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-muted-foreground">
+                            Las subcategorías ayudan a organizar mejor tus finanzas.
+                        </p>
+                    </div>
+                )}
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Color</label>

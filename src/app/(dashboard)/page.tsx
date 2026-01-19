@@ -4,7 +4,8 @@ import {
     DollarSign,
     TrendingUp,
     TrendingDown,
-    CreditCard
+    CreditCard,
+    Wallet
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 
@@ -19,77 +20,99 @@ export default async function DashboardPage() {
 
     // Fechas para estadísticas mensuales
     const now = new Date()
-    // Primer día del mes actual
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-    // Último día del mes actual
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString()
 
-    // 1. Obtener Ingresos Mensuales
-    const { data: incomeData } = await supabase
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'income')
-        .gte('date', firstDay)
-        .lte('date', lastDay)
+    // Obtener IDs de tipos de transacción
+    const { data: transactionTypes } = await supabase
+        .from('transaction_types')
+        .select('id, code')
 
-    const monthlyIncome = incomeData?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
+    const incomeTypeId = transactionTypes?.find(t => t.code === 'income')?.id
+    const expenseTypeId = transactionTypes?.find(t => t.code === 'expense')?.id
+
+    // 1. Obtener Ingresos Mensuales
+    let monthlyIncome = 0
+    if (incomeTypeId) {
+        const { data: incomeData } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('user_id', user.id)
+            .eq('transaction_type_id', incomeTypeId)
+            .gte('date', firstDay)
+            .lte('date', lastDay)
+
+        monthlyIncome = incomeData?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
+    }
 
     // 2. Obtener Gastos Mensuales
-    const { data: expenseData } = await supabase
-        .from('transactions')
-        .select('amount')
+    let monthlyExpenses = 0
+    if (expenseTypeId) {
+        const { data: expenseData } = await supabase
+            .from('transactions')
+            .select('amount')
+            .eq('user_id', user.id)
+            .eq('transaction_type_id', expenseTypeId)
+            .gte('date', firstDay)
+            .lte('date', lastDay)
+
+        monthlyExpenses = expenseData?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
+    }
+
+    // 3. Obtener tipo de cuenta de tarjeta de crédito
+    const { data: creditCardType } = await supabase
+        .from('account_types')
+        .select('id')
+        .eq('code', 'credit_card')
+        .single()
+
+    // 4. Obtener Deuda de Tarjetas (from accounts table now)
+    let creditDebt = 0
+    if (creditCardType) {
+        const { data: cardsData } = await supabase
+            .from('accounts')
+            .select('current_balance')
+            .eq('user_id', user.id)
+            .eq('account_type_id', creditCardType.id)
+
+        creditDebt = cardsData?.reduce((acc, curr) => acc + Number(curr.current_balance), 0) || 0
+    }
+
+    // 5. Obtener saldo total de cuentas (excluyendo tarjetas de crédito)
+    const { data: accountsData } = await supabase
+        .from('accounts')
+        .select('current_balance, account_types(code)')
         .eq('user_id', user.id)
-        .eq('type', 'expense')
-        .gte('date', firstDay)
-        .lte('date', lastDay)
+        .eq('is_active', true)
 
-    const monthlyExpenses = expenseData?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
+    const totalAccountBalance = accountsData
+        ?.filter(a => (a.account_types as any)?.code !== 'credit_card')
+        ?.reduce((acc, curr) => acc + Number(curr.current_balance), 0) || 0
 
-    // 3. Obtener Deuda de Tarjetas
-    const { data: cardsData } = await supabase
-        .from('credit_cards')
-        .select('current_balance')
-        .eq('user_id', user.id)
+    // Balance total = saldo en cuentas - deuda de tarjetas
+    const totalBalance = totalAccountBalance - creditDebt
 
-    const creditDebt = cardsData?.reduce((acc, curr) => acc + Number(curr.current_balance), 0) || 0
-
-    // 4. Calcular Balance Total
-    const { data: allIncome } = await supabase
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'income')
-
-    const { data: allExpense } = await supabase
-        .from('transactions')
-        .select('amount')
-        .eq('user_id', user.id)
-        .eq('type', 'expense')
-
-    // Balance inicial (si existiera) no se contempla, asumimos flujo neto
-    const totalIncome = allIncome?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
-    const totalExpense = allExpense?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0
-    const totalBalance = totalIncome - totalExpense
-
-    // Transacciones Recientes
+    // Transacciones Recientes con nuevas relaciones
     const { data: recentTransactions } = await supabase
         .from('transactions')
         .select(`
             *,
-            categories (name, icon, color)
+            transaction_types (code, name),
+            categories (name, icon, color),
+            accounts (name)
         `)
         .eq('user_id', user.id)
         .order('date', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(5)
 
     const stats = [
         {
             name: 'Balance Total',
             value: formatCurrency(totalBalance),
-            icon: DollarSign,
-            color: 'text-emerald-500',
-            bg: 'bg-emerald-500/10'
+            icon: Wallet,
+            color: totalBalance >= 0 ? 'text-emerald-500' : 'text-rose-500',
+            bg: totalBalance >= 0 ? 'bg-emerald-500/10' : 'bg-rose-500/10'
         },
         {
             name: 'Ingresos (Mes)',
@@ -144,29 +167,41 @@ export default async function DashboardPage() {
                 <h3 className="text-lg font-semibold mb-4">Transacciones Recientes</h3>
                 <div className="space-y-4">
                     {recentTransactions && recentTransactions.length > 0 ? (
-                        recentTransactions.map((t: any) => (
-                            <div key={t.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div
-                                        className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
-                                        style={{ backgroundColor: `${t.categories?.color}20`, color: t.categories?.color || '#888' }}
-                                    >
-                                        <span className="text-sm font-bold uppercase">
-                                            {t.categories?.name?.[0] || '?'}
-                                        </span>
+                        recentTransactions.map((t: any) => {
+                            const typeCode = t.transaction_types?.code
+                            const isIncome = typeCode === 'income'
+                            const isExpense = typeCode === 'expense'
+
+                            return (
+                                <div key={t.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                                    <div className="flex items-center gap-4">
+                                        <div
+                                            className="h-10 w-10 rounded-full flex items-center justify-center shrink-0"
+                                            style={{ backgroundColor: `${t.categories?.color || '#888'}20`, color: t.categories?.color || '#888' }}
+                                        >
+                                            <span className="text-sm font-bold uppercase">
+                                                {t.categories?.name?.[0] || t.transaction_types?.name?.[0] || '?'}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <p className="font-medium">{t.description || t.categories?.name || t.transaction_types?.name}</p>
+                                            <p className="text-sm text-muted-foreground capitalize">
+                                                {new Date(t.date).toLocaleDateString('es-HN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                                {t.accounts?.name && (
+                                                    <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded">{t.accounts.name}</span>
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium">{t.description || t.categories?.name}</p>
-                                        <p className="text-sm text-muted-foreground capitalize">
-                                            {new Date(t.date).toLocaleDateString('es-HN', { weekday: 'short', day: 'numeric', month: 'short' })}
-                                        </p>
-                                    </div>
+                                    <span className={`font-bold tabular-nums ${isIncome ? 'text-emerald-500' :
+                                            isExpense ? 'text-rose-500' :
+                                                'text-blue-500'
+                                        }`}>
+                                        {isIncome ? '+' : isExpense ? '-' : ''}{formatCurrency(t.amount)}
+                                    </span>
                                 </div>
-                                <span className={`font-bold tabular-nums ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                                    {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
-                                </span>
-                            </div>
-                        ))
+                            )
+                        })
                     ) : (
                         <div className="p-8 text-center text-muted-foreground border border-dashed border-border rounded-lg">
                             No hay transacciones recientes. ¡Comienza a agregar algunas!
