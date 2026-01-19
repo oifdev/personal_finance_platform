@@ -268,7 +268,10 @@ export async function getBudgetSuggestion(categoryId: string | 'global') {
 
     const categoryName = categoryId === 'global'
         ? 'Global'
-        : (history[0].categories as { name: string })?.name || 'Categoría seleccionada'
+        : (() => {
+            const cat = history[0].categories as any
+            return (Array.isArray(cat) ? cat[0]?.name : cat?.name) || 'Categoría seleccionada'
+        })()
 
     const suggestion = await suggestBudgetLimit(categoryName, history)
 

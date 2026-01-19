@@ -32,7 +32,7 @@ export function CardsManager({ cards }: CardsManagerProps) {
                 </div>
             ) : (
                 <CardList
-                    cards={cards}
+                    accounts={cards}
                     onEdit={setEditingCard}
                 />
             )}
