@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { payAccount, deleteAccount, setDefaultAccount } from '@/app/(dashboard)/accounts/actions'
+import { payAccount, deleteAccount, setDefaultAccount } from '@/app/dashboard/accounts/actions'
 import { CreditCard, Trash2, Calendar, Pencil, Wallet, Landmark, PiggyBank, TrendingUp, Star } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
@@ -93,8 +93,8 @@ export function AccountList({ accounts, onEdit }: { accounts: any[], onEdit: (ac
                                         onClick={() => setDefaultAccount(account.id)}
                                         disabled={account.is_default}
                                         className={`flex-1 mr-4 text-sm font-medium py-2 rounded-lg transition-colors border ${account.is_default
-                                                ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 cursor-default'
-                                                : 'bg-white/5 hover:bg-white/10 border-white/10'
+                                            ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 cursor-default'
+                                            : 'bg-white/5 hover:bg-white/10 border-white/10'
                                             }`}
                                     >
                                         {account.is_default ? 'Cuenta Principal' : 'Hacer Principal'}

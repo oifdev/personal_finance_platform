@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createTransaction, updateTransaction } from '@/app/(dashboard)/transactions/actions'
+import { createTransaction, updateTransaction } from '@/app/dashboard/transactions/actions'
 import type { Category, Account, TransactionType } from '@/types/database'
 
 // Props: list of categories and accounts passed from Server Component

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { updatePassword } from '@/app/(dashboard)/profile/actions'
+import { updatePassword } from '@/app/dashboard/profile/actions'
 import { Lock, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { SuccessModal } from '@/components/ui/success-modal'

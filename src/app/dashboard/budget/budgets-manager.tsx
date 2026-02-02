@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { BudgetForm } from '@/components/budget/budget-form'
-import { deleteBudget } from '@/app/(dashboard)/budget/actions'
+import { deleteBudget } from '@/app/dashboard/budget/actions'
 import { Wallet, Trash2, Pencil, Sparkles, Brain, X } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { ConfirmModal } from '@/components/ui/confirm-modal'

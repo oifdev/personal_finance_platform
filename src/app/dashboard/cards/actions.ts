@@ -14,4 +14,4 @@ export {
     payCreditCard,
     getCreditCards,
     getCardIssuers,
-} from '@/app/(dashboard)/accounts/actions'
+} from '@/app/dashboard/accounts/actions'

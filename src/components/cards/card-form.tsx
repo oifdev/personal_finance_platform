@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createAccount, updateAccount } from '@/app/(dashboard)/accounts/actions'
+import { createAccount, updateAccount } from '@/app/dashboard/accounts/actions'
 import { Plus, CreditCard, Landmark, Wallet, PiggyBank, TrendingUp } from 'lucide-react'
 import type { AccountType, CardIssuer, Currency } from '@/types/database'
 
@@ -90,8 +90,8 @@ export function AccountForm({ initialData, accountTypes = [], cardIssuers = [], 
                                             type="button"
                                             onClick={() => setSelectedType(type.code)}
                                             className={`flex flex-col items-center gap-1 p-3 rounded-lg border transition-all ${selectedType === type.code
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-border hover:border-muted-foreground'
+                                                ? 'border-primary bg-primary/10 text-primary'
+                                                : 'border-border hover:border-muted-foreground'
                                                 }`}
                                         >
                                             <Icon className="h-5 w-5" />

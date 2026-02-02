@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteTransaction } from '@/app/(dashboard)/transactions/actions'
+import { deleteTransaction } from '@/app/dashboard/transactions/actions'
 import { Trash2, Pencil, ArrowRightLeft } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { getIcon } from '@/lib/icons'
@@ -82,9 +82,9 @@ export function TransactionList({ transactions, onEdit }: { transactions: any[],
 
                         <div className="flex items-center gap-4">
                             <span className={`font-bold tabular-nums ${isExpense ? 'text-rose-500' :
-                                    isIncome ? 'text-emerald-500' :
-                                        isTransfer ? 'text-blue-400' :
-                                            'text-amber-500'
+                                isIncome ? 'text-emerald-500' :
+                                    isTransfer ? 'text-blue-400' :
+                                        'text-amber-500'
                                 }`}>
                                 {isExpense ? '-' : isIncome ? '+' : ''}{formatCurrency(Number(tx.amount))}
                             </span>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { updateProfile, uploadAvatar, updatePassword } from '@/app/(dashboard)/profile/actions'
+import { updateProfile, uploadAvatar, updatePassword } from '@/app/dashboard/profile/actions'
 import { User, Camera, Loader2, Lock } from 'lucide-react'
 import Image from 'next/image'
 import { SuccessModal } from '@/components/ui/success-modal'

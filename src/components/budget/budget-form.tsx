@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { setBudget, getBudgetSuggestion } from '@/app/(dashboard)/budget/actions'
+import { setBudget, getBudgetSuggestion } from '@/app/dashboard/budget/actions'
 import { Sparkles } from 'lucide-react'
 
 interface BudgetFormProps {
