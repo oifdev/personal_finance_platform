@@ -18,12 +18,12 @@ import { signout } from '@/app/login/actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const navigation = [
-    { name: 'Resumen', href: '/', icon: LayoutDashboard },
-    { name: 'Transacciones', href: '/transactions', icon: ArrowRightLeft },
-    { name: 'Presupuestos', href: '/budget', icon: TrendingUp },
-    { name: 'Tarjetas', href: '/cards', icon: CreditCard },
-    { name: 'Categorías', href: '/categories', icon: Wallet },
-    { name: 'Reportes', href: '/reports', icon: PieChart },
+    { name: 'Resumen', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Transacciones', href: '/dashboard/transactions', icon: ArrowRightLeft },
+    { name: 'Presupuestos', href: '/dashboard/budget', icon: TrendingUp },
+    { name: 'Tarjetas', href: '/dashboard/cards', icon: CreditCard },
+    { name: 'Categorías', href: '/dashboard/categories', icon: Wallet },
+    { name: 'Reportes', href: '/dashboard/reports', icon: PieChart },
 ]
 
 export default function Sidebar() {
@@ -47,7 +47,7 @@ export default function Sidebar() {
 
                 <nav className="space-y-1">
                     {navigation.map((item) => {
-                        const isActive = pathname === item.href
+                        const isActive = pathname === item.href || (item.href === '/dashboard' && pathname === '/')
                         return (
                             <Link
                                 key={item.name}
@@ -69,15 +69,15 @@ export default function Sidebar() {
                 <div className="mt-8 pt-8 border-t border-border/50">
                     <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Cuenta</p>
                     <Link
-                        href="/profile"
+                        href="/dashboard/profile"
                         className={cn(
                             "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group",
-                            pathname === '/profile'
+                            pathname === '/dashboard/profile'
                                 ? "bg-primary/10 text-primary shadow-sm"
                                 : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
                         )}
                     >
-                        <Settings className={cn("h-4 w-4", pathname === '/profile' ? "text-primary" : "text-muted-foreground group-hover:text-primary")} />
+                        <Settings className={cn("h-4 w-4", pathname === '/dashboard/profile' ? "text-primary" : "text-muted-foreground group-hover:text-primary")} />
                         Configuración
                     </Link>
                 </div>

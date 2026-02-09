@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { analyzeBudget, suggestBudgetLimit } from '@/lib/ai'
+import { analyzeBudget, suggestBudgetLimit, chatWithAI, ChatMessage } from '@/lib/ai'
 import { startOfMonth, subMonths } from 'date-fns'
 import type { Budget, BudgetFormData, AIInsight } from '@/types/database'
 
@@ -233,6 +233,42 @@ export async function markInsightAsRead(id: string) {
 
     if (error) return { error: error.message }
     return { success: true }
+}
+
+export async function sendChatMessage(
+    message: string,
+    conversationHistory: ChatMessage[]
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    // Fetch recent transactions (last 3 months)
+    const threeMonthsAgo = subMonths(new Date(), 3).toISOString()
+
+    const { data: transactions } = await supabase
+        .from('transactions')
+        .select('*, categories(name, category_types(code))')
+        .eq('user_id', user.id)
+        .gte('date', threeMonthsAgo)
+        .order('date', { ascending: false })
+        .limit(50)
+
+    // Fetch current budgets
+    const { data: budgets } = await supabase
+        .from('budgets')
+        .select('*, categories(name)')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+
+    const response = await chatWithAI(
+        message,
+        transactions || [],
+        budgets || [],
+        conversationHistory
+    )
+
+    return { response }
 }
 
 export async function getBudgetSuggestion(categoryId: string | 'global') {

@@ -17,13 +17,13 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const navigation = [
-    { name: 'Inicio', href: '/', icon: LayoutDashboard },
-    { name: 'Transac.', href: '/transactions', icon: ArrowRightLeft },
-    { name: 'Categorías', href: '/categories', icon: Tags },
-    { name: 'Tarjetas', href: '/cards', icon: CreditCard },
-    { name: 'Reportes', href: '/reports', icon: PieChart },
-    { name: 'Pptos.', href: '/budget', icon: Wallet },
-    { name: 'Config.', href: '/profile', icon: Settings },
+    { name: 'Inicio', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Transac.', href: '/dashboard/transactions', icon: ArrowRightLeft },
+    { name: 'Categorías', href: '/dashboard/categories', icon: Tags },
+    { name: 'Tarjetas', href: '/dashboard/cards', icon: CreditCard },
+    { name: 'Reportes', href: '/dashboard/reports', icon: PieChart },
+    { name: 'Pptos.', href: '/dashboard/budget', icon: Wallet },
+    { name: 'Config.', href: '/dashboard/profile', icon: Settings },
 ]
 
 export function MobileNav() {
@@ -36,7 +36,7 @@ export function MobileNav() {
 
             <nav className="relative flex justify-around items-center h-16 px-2">
                 {navigation.map((item) => {
-                    const isActive = pathname === item.href
+                    const isActive = pathname === item.href || (item.href === '/dashboard' && pathname === '/')
                     return (
                         <Link
                             key={item.href}

@@ -141,3 +141,54 @@ export async function suggestBudgetLimit(categoryName: string, history: any[]) {
     const amount = parseFloat(result.trim().replace(/[^0-9.]/g, ''));
     return isNaN(amount) ? null : amount;
 }
+
+export interface ChatMessage {
+    role: 'user' | 'assistant';
+    content: string;
+}
+
+export async function chatWithAI(
+    userMessage: string,
+    transactions: any[],
+    budgets: any[],
+    conversationHistory: ChatMessage[] = []
+) {
+    // Build conversation context
+    const historyContext = conversationHistory
+        .slice(-6) // Keep last 6 messages for context
+        .map(msg => `${msg.role === 'user' ? 'Usuario' : 'OGFINANCE'}: ${msg.content}`)
+        .join('\n\n');
+
+    const prompt = `
+Eres OGFINANCE, un asistente financiero personal experto, amigable y conversacional.
+Tu objetivo es ayudar al usuario con sus finanzas personales de manera clara y útil.
+
+=== DATOS FINANCIEROS DEL USUARIO ===
+Transacciones recientes (últimos 3 meses):
+${JSON.stringify(transactions.slice(0, 30), null, 2)}
+
+Presupuestos actuales:
+${JSON.stringify(budgets, null, 2)}
+
+=== HISTORIAL DE CONVERSACIÓN ===
+${historyContext || '(Esta es la primera interacción)'}
+
+=== MENSAJE ACTUAL DEL USUARIO ===
+${userMessage}
+
+=== INSTRUCCIONES ===
+1. Responde de forma conversacional y amigable, como un asesor financiero personal.
+2. Usa los datos financieros reales del usuario para dar respuestas precisas.
+3. Si el usuario pregunta por montos o estadísticas, calcula usando los datos proporcionados.
+4. Mantén tus respuestas concisas pero informativas (máximo 200 palabras).
+5. Usa formato Markdown para estructurar mejor tu respuesta cuando sea apropiado.
+6. Si no tienes suficientes datos para responder algo específico, dilo honestamente.
+7. Puedes hacer preguntas de seguimiento para entender mejor las necesidades del usuario.
+8. Responde SIEMPRE en español.
+
+Tu respuesta:`;
+
+    const result = await callAI(prompt);
+    return result || "Lo siento, no pude procesar tu mensaje en este momento. ¿Podrías intentar de nuevo?";
+}
+

@@ -1,8 +1,8 @@
 'use client'
 
 import {
-    BarChart,
-    Bar,
+    AreaChart,
+    Area,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -14,7 +14,7 @@ import {
     Cell
 } from 'recharts'
 import { exportToPDF, exportToExcel } from '@/lib/export'
-import { Download } from 'lucide-react'
+import { Download, TrendingUp, PieChart as PieChartIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
@@ -82,56 +82,144 @@ export function FinancialCharts({ monthlyData, categoryData, transactions }: Cha
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">
-                {/* Monthly Trends */}
-                <div className="glass-card p-6 rounded-xl">
-                    <h3 className="text-lg font-semibold mb-6">Ingresos mensuales vs. gastos</h3>
+                {/* Monthly Trends - Area Chart */}
+                <div className="glass-card p-6 rounded-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                            <TrendingUp className="h-5 w-5 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-semibold">Tendencia de Ingresos vs Gastos</h3>
+                    </div>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={monthlyData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                                <XAxis dataKey="name" stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke={axisColor} fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, borderRadius: '8px', color: tooltipText }}
-                                    itemStyle={{ color: tooltipText }}
+                            <AreaChart data={monthlyData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#38b6ff" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#38b6ff" stopOpacity={0} />
+                                    </linearGradient>
+                                    <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#f1d77a" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#f1d77a" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                                <XAxis
+                                    dataKey="name"
+                                    stroke={axisColor}
+                                    fontSize={12}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={10}
                                 />
-                                <Legend />
-                                <Bar dataKey="income" name="Ingresos" fill="#38b6ff" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="expense" name="Gastos" fill="#f1d77a" radius={[4, 4, 0, 0]} />
-                            </BarChart>
+                                <YAxis
+                                    stroke={axisColor}
+                                    fontSize={12}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(value) => `$${value}`}
+                                    tickMargin={10}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: tooltipBg,
+                                        borderColor: tooltipBorder,
+                                        borderRadius: '12px',
+                                        color: tooltipText,
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                    }}
+                                    itemStyle={{ color: tooltipText }}
+                                    formatter={(value: any) => [`L ${Number(value).toLocaleString()}`, '']}
+                                />
+                                <Legend iconType="circle" />
+                                <Area
+                                    type="monotone"
+                                    dataKey="income"
+                                    name="Ingresos"
+                                    stroke="#38b6ff"
+                                    strokeWidth={3}
+                                    fillOpacity={1}
+                                    fill="url(#colorIncome)"
+                                />
+                                <Area
+                                    type="monotone"
+                                    dataKey="expense"
+                                    name="Gastos"
+                                    stroke="#f1d77a"
+                                    strokeWidth={3}
+                                    fillOpacity={1}
+                                    fill="url(#colorExpense)"
+                                />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Category Distribution */}
-                <div className="glass-card p-6 rounded-xl">
-                    <h3 className="text-lg font-semibold mb-6">Gastos por categoría</h3>
-                    <div className="h-[300px] w-full flex justify-center">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={categoryData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {categoryData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, borderRadius: '8px', color: tooltipText }}
-                                    itemStyle={{ color: tooltipText }}
-                                />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
+                {/* Category Distribution - Improved Pie Chart */}
+                <div className="glass-card p-6 rounded-xl animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                            <PieChartIcon className="h-5 w-5 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-semibold">Gastos por Categoría</h3>
+                    </div>
+                    <div className="h-[300px] w-full flex justify-center relative">
+                        {categoryData.length === 0 ? (
+                            <div className="flex items-center justify-center w-full h-full text-muted-foreground">
+                                No hay datos de gastos
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={categoryData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={80}
+                                        outerRadius={100}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        cornerRadius={5}
+                                        stroke="none"
+                                    >
+                                        {categoryData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: tooltipBg,
+                                            borderColor: tooltipBorder,
+                                            borderRadius: '12px',
+                                            color: tooltipText,
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        }}
+                                        itemStyle={{ color: tooltipText }}
+                                        formatter={(value: any) => [`L ${Number(value).toLocaleString()}`, '']}
+                                    />
+                                    <Legend
+                                        layout="vertical"
+                                        verticalAlign="middle"
+                                        align="right"
+                                        iconType="circle"
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
+
+                        {/* Center Text for Pie Chart */}
+                        {categoryData.length > 0 && (
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
+                                <span className="text-xs text-muted-foreground font-medium block">Total</span>
+                                <span className="text-xl font-bold">
+                                    L{categoryData.reduce((acc, curr) => acc + curr.value, 0).toLocaleString()}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+
